@@ -1,9 +1,9 @@
 package org.easyit.demo.api.interceptor;
 
+import org.easyit.demo.api.CutPoint;
 import org.easyit.demo.api.Interceptor;
-import org.easyit.demo.api.interceptor.AbstractInterceptorGroup;
+import org.easyit.demo.api.model.Parameters;
 
-import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -17,12 +17,18 @@ public class MultiMethodInterceptorGroup extends AbstractInterceptorGroup {
     }
 
     @Override
-    protected List<Interceptor> getInterceptorList(Object obj, Method method, Object[] allArguments, Class<?>[] parameterTypes) {
-        String name = method.getName();
+    protected List<Interceptor> getInterceptorList(Parameters parameters) {
+        String name = parameters.getMethod().getName();
         List<Interceptor> interceptors = methodInterceptorMap.get(name);
         if (interceptors == null) {
             return Collections.emptyList();
         }
         return interceptors;
+    }
+
+    @Override
+    public CutPoint getCutPoint() {
+        // TODO: 2022/12/13
+        return null;
     }
 }

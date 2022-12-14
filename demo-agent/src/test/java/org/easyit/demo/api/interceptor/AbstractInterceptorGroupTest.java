@@ -1,13 +1,15 @@
 package org.easyit.demo.api.interceptor;
 
 import com.google.common.collect.Lists;
+import org.easyit.demo.api.CutPoint;
 import org.easyit.demo.api.Interceptor;
+import org.easyit.demo.api.model.BaseParameters;
+import org.easyit.demo.api.model.Parameters;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.lang.reflect.Method;
 import java.util.List;
 
 public class AbstractInterceptorGroupTest {
@@ -24,28 +26,32 @@ public class AbstractInterceptorGroupTest {
 
     @Test
     public void testBeforeMethod() {
-        testInterceptorGroup.beforeMethod(null, null, null, null);
+        testInterceptorGroup.beforeMethod(null);
         MatcherAssert.assertThat(TestInterceptor.RECORD, CoreMatchers.equalTo(Lists.newArrayList(1 + TestInterceptor.BEFORE, 2 + TestInterceptor.BEFORE)));
     }
 
 
     @Test
     public void testHandleMethodException() {
-        testInterceptorGroup.handleMethodException(null, null, null, null, null);
+        testInterceptorGroup.handleMethodException(null);
         MatcherAssert.assertThat(TestInterceptor.RECORD, CoreMatchers.equalTo(Lists.newArrayList(1 + TestInterceptor.EXCEPTION, 2 + TestInterceptor.EXCEPTION)));
     }
 
     @Test
     public void testAfterMethod() {
-        testInterceptorGroup.afterMethod(null, null, null, null, null);
+        testInterceptorGroup.afterMethod(null);
         MatcherAssert.assertThat(TestInterceptor.RECORD, CoreMatchers.equalTo(Lists.newArrayList(2 + TestInterceptor.AFTER, 1 + TestInterceptor.AFTER)));
     }
 
 
     private class TestInterceptorGroup extends AbstractInterceptorGroup {
+        @Override
+        public CutPoint getCutPoint() {
+            return null;
+        }
 
         @Override
-        protected List<Interceptor> getInterceptorList(Object obj, Method method, Object[] allArguments, Class<?>[] parameterTypes) {
+        protected List<Interceptor> getInterceptorList(Parameters parameters) {
             return Lists.newArrayList(interceptor1, interceptor2);
         }
     }

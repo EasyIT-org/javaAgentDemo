@@ -1,13 +1,16 @@
 package org.easyit.demo.api;
 
-import java.lang.reflect.Method;
+import org.easyit.demo.api.model.BaseParameters;
+import org.easyit.demo.api.model.ExceptionParameters;
+import org.easyit.demo.api.model.Parameters;
+import org.easyit.demo.api.model.ReturnParameters;
 
 public interface Interceptor extends Comparable<Interceptor> {
-    void beforeMethod(Object obj, Method method, Object[] allArguments, Class<?>[] parameterTypes);
+    void beforeMethod(Parameters parameters);
 
-    void handleMethodException(Object obj, Method method, Object[] allArguments, Class<?>[] parameterTypes, Throwable t);
+    void handleMethodException(ExceptionParameters exceptionParameters);
 
-    void afterMethod(Object obj, Method method, Object[] allArguments, Class<?>[] parameterTypes, Object ret);
+    void afterMethod(ReturnParameters returnParameters);
 
     default int compareTo(Interceptor another) {
         return this.getOrder().compareTo(another.getOrder());
@@ -16,4 +19,6 @@ public interface Interceptor extends Comparable<Interceptor> {
     default Integer getOrder() {
         return 0;
     }
+
+    CutPoint getCutPoint();
 }

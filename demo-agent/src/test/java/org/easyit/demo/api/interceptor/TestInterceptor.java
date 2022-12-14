@@ -1,17 +1,21 @@
 package org.easyit.demo.api.interceptor;
 
+import org.easyit.demo.api.CutPoint;
 import org.easyit.demo.api.Interceptor;
+import org.easyit.demo.api.model.BaseParameters;
+import org.easyit.demo.api.model.ExceptionParameters;
+import org.easyit.demo.api.model.Parameters;
+import org.easyit.demo.api.model.ReturnParameters;
 
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class TestInterceptor implements Interceptor {
 
-    public static List<String> RECORD = new CopyOnWriteArrayList<>();
     public static final String BEFORE = "beforeMethod";
     public static final String EXCEPTION = "handleMethodException";
     public static final String AFTER = "afterMethod";
+    public static List<String> RECORD = new CopyOnWriteArrayList<>();
     private final int order;
     private final String name;
 
@@ -25,22 +29,27 @@ public class TestInterceptor implements Interceptor {
     }
 
     @Override
-    public void beforeMethod(Object obj, Method method, Object[] allArguments, Class<?>[] parameterTypes) {
+    public void beforeMethod(Parameters parameters) {
         RECORD.add(name + BEFORE);
     }
 
     @Override
-    public void handleMethodException(Object obj, Method method, Object[] allArguments, Class<?>[] parameterTypes, Throwable t) {
+    public void handleMethodException(ExceptionParameters exceptionParameters) {
         RECORD.add(name + EXCEPTION);
     }
 
     @Override
-    public void afterMethod(Object obj, Method method, Object[] allArguments, Class<?>[] parameterTypes, Object ret) {
+    public void afterMethod(ReturnParameters returnParameters) {
         RECORD.add(name + AFTER);
     }
 
     @Override
     public Integer getOrder() {
         return order;
+    }
+
+    @Override
+    public CutPoint getCutPoint() {
+        return null;
     }
 }

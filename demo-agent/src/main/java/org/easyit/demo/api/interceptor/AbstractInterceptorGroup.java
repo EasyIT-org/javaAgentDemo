@@ -1,6 +1,9 @@
 package org.easyit.demo.api.interceptor;
 
 import org.easyit.demo.api.Interceptor;
+import org.easyit.demo.api.model.Parameters;
+import org.easyit.demo.api.model.ExceptionParameters;
+import org.easyit.demo.api.model.ReturnParameters;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -8,27 +11,27 @@ import java.util.List;
 public abstract class AbstractInterceptorGroup implements Interceptor {
 
     @Override
-    public void beforeMethod(Object obj, Method method, Object[] allArguments, Class<?>[] parameterTypes) {
-        for (Interceptor interceptor : getInterceptorList(obj, method, allArguments, parameterTypes)) {
-            interceptor.beforeMethod(obj, method, allArguments, parameterTypes);
+    public void beforeMethod(Parameters parameters) {
+        for (Interceptor interceptor : getInterceptorList(parameters)) {
+            interceptor.beforeMethod(parameters);
         }
     }
 
 
     @Override
-    public void handleMethodException(Object obj, Method method, Object[] allArguments, Class<?>[] parameterTypes, Throwable t) {
-        for (Interceptor interceptor : getInterceptorList(obj, method, allArguments, parameterTypes)) {
-            interceptor.handleMethodException(obj, method, allArguments, parameterTypes, t);
+    public void handleMethodException(ExceptionParameters exceptionParameters) {
+        for (Interceptor interceptor : getInterceptorList(exceptionParameters)) {
+            interceptor.handleMethodException(exceptionParameters);
         }
     }
 
     @Override
-    public void afterMethod(Object obj, Method method, Object[] allArguments, Class<?>[] parameterTypes, Object ret) {
-        List<Interceptor> interceptorList = getInterceptorList(obj, method, allArguments, parameterTypes);
+    public void afterMethod(ReturnParameters returnParameters) {
+        List<Interceptor> interceptorList = getInterceptorList(returnParameters);
         for (int i = interceptorList.size() - 1; i >= 0; i--) {
-            interceptorList.get(i).afterMethod(obj, method, allArguments, parameterTypes, ret);
+            interceptorList.get(i).afterMethod(returnParameters);
         }
     }
 
-    protected abstract List<Interceptor> getInterceptorList(Object obj, Method method, Object[] allArguments, Class<?>[] parameterTypes);
+    protected abstract List<Interceptor> getInterceptorList(Parameters parameters);
 }

@@ -1,46 +1,40 @@
 package org.easyit.demo.api.interceptor;
 
-import com.alipay.sofa.common.profile.diagnostic.Profiler;
-import org.easyit.demo.api.Interceptor;
+import org.easyit.demo.api.CutPoint;
+import org.easyit.demo.api.TracerAdaptor;
+import org.easyit.demo.api.model.Context;
+import org.easyit.demo.api.model.ExceptionParameters;
+import org.easyit.demo.api.model.Parameters;
+import org.easyit.demo.api.model.ReturnParameters;
 
-import java.lang.reflect.Method;
+import java.util.List;
 
 /**
  * profile entry interceptor
  */
-public class EntryInterceptor implements Interceptor {
+public class EntryInterceptor extends AbstractInterceptor {
 
-    private String name;
-    private String typeName;
-
-    public EntryInterceptor(String name, String typeName) {
-        this.name = name;
-        this.typeName = typeName;
+    public EntryInterceptor(CutPoint cutPoint, List<TracerAdaptor> tracerAdaptors) {
+        super(cutPoint, tracerAdaptors);
     }
 
     @Override
-    public void beforeMethod(Object obj, Method method, Object[] allArguments, Class<?>[] parameterTypes) {
-        resetThreadLocal();
-        startProfile();
-    }
-
-    private void startProfile() {
-        Profiler.start(name);
-    }
-
-    private void resetThreadLocal() {
-        Profiler.reset();
+    protected void doBeforeMethod(TracerAdaptor tracerAdaptor, Parameters parameters, Context context) {
+        tracerAdaptor.onEnterStart(parameters, context);
     }
 
     @Override
-    public void handleMethodException(Object obj, Method method, Object[] allArguments, Class<?>[] parameterTypes, Throwable t) {
-
+    protected void doAfterMethod(TracerAdaptor tracerAdaptor, ReturnParameters returnParameters, Context context) {
+        tracerAdaptor.onEnterEnd(returnParameters, context);
     }
 
     @Override
-    public void afterMethod(Object obj, Method method, Object[] allArguments, Class<?>[] parameterTypes, Object ret) {
-        Profiler.release();
-        String dump = Profiler.dump(typeName);
-        System.out.println(dump);
+    protected void doHandleMethodException(TracerAdaptor tracerAdaptor, ExceptionParameters exceptionParameters, Context context) {
+        tracerAdaptor.onException(exceptionParameters, context);
+    }
+
+    @Override
+    public CutPoint getCutPoint() {
+        return cutPoint;
     }
 }
