@@ -1,5 +1,7 @@
 package org.easyit.demo.boot;
 
+import com.alibaba.ttl.threadpool.agent.TtlAgent;
+
 import java.DemoSpy;
 import java.io.File;
 import java.io.PrintStream;
@@ -16,11 +18,8 @@ public class AgentBootstrap {
     private static final String DEMO_BOOTSTRAP = "org.easyit.demo.boot.DemoBootstrap";
     private static final String GET_INSTANCE = "getInstance";
     private static final String IS_INITIALIZED = "isInitialized";
-
-    private static volatile AgentClassloader agentClassLoader;
-
     private static final PrintStream ps = System.err;
-
+    private static volatile AgentClassloader agentClassLoader;
 
     public static void premain(String args, Instrumentation inst) {
         recoverMain(inst);
@@ -33,21 +32,9 @@ public class AgentBootstrap {
 
 
     private static void recoverMain(Instrumentation inst) {
+        // todo test thread-local in concurrency mode
+        TtlAgent.premain(null, inst);
         new ByteBuddyStarter().start(inst);
-//        try {
-//            System.out.println("start main");
-//            main(inst);
-//        } catch (Throwable t) {
-//            t.printStackTrace(ps);
-//            try {
-//                if (ps != System.err) {
-//                    ps.close();
-//                }
-//            } catch (Throwable tt) {
-//                // ignore
-//            }
-//            throw new RuntimeException(t);
-//        }
     }
 
     private static void main(final Instrumentation inst) throws Throwable {

@@ -6,7 +6,7 @@ import org.easyit.demo.api.model.Parameters;
 import org.easyit.demo.api.model.ReturnParameters;
 
 
-public interface TracerAdaptor {
+public interface TracerEndpoint {
 
     void onEnterStart(Parameters parameters, Context context);
 

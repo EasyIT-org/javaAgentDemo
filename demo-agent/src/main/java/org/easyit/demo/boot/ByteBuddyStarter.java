@@ -13,7 +13,7 @@ import org.easyit.demo.api.CutPoint;
 import org.easyit.demo.api.Interceptor;
 import org.easyit.demo.api.interceptor.MultiMethodInterceptorGroup;
 import org.easyit.demo.api.interceptor.InterceptorRegistry;
-import org.easyit.demo.bytebuddy.CommonInterceptorAdaptor;
+import org.easyit.demo.bytebuddy.ByteBuddyInterceptorAdaptor;
 
 import java.lang.instrument.Instrumentation;
 import java.security.ProtectionDomain;
@@ -63,10 +63,10 @@ public class ByteBuddyStarter {
         return multiNameMatcher(methodMap.keySet());
     }
 
-    private CommonInterceptorAdaptor getCommonInterceptor(TypeDescription typeDescription, Map<String, Map<String, List<CutPoint>>> map) {
+    private ByteBuddyInterceptorAdaptor getCommonInterceptor(TypeDescription typeDescription, Map<String, Map<String, List<CutPoint>>> map) {
         Map<String, List<CutPoint>> methodMap = map.get(typeDescription.getName());
         Interceptor multiMethodInterceptor = resolvePointCut(methodMap);
-        CommonInterceptorAdaptor commonInterceptorAdaptor = new CommonInterceptorAdaptor(multiMethodInterceptor);
+        ByteBuddyInterceptorAdaptor commonInterceptorAdaptor = new ByteBuddyInterceptorAdaptor(multiMethodInterceptor);
         return commonInterceptorAdaptor;
     }
 

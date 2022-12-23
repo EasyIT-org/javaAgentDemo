@@ -2,7 +2,7 @@ package org.easyit.demo.api.interceptor;
 
 import org.easyit.demo.api.CutPoint;
 import org.easyit.demo.api.Interceptor;
-import org.easyit.demo.api.TracerAdaptor;
+import org.easyit.demo.api.TracerEndpoint;
 import org.easyit.demo.api.model.Context;
 import org.easyit.demo.api.model.ExceptionParameters;
 import org.easyit.demo.api.model.Parameters;
@@ -14,18 +14,18 @@ import java.util.List;
 public abstract class AbstractInterceptor implements Interceptor {
 
     protected final CutPoint cutPoint;
-    protected final List<TracerAdaptor> tracerAdaptors;
+    protected final List<TracerEndpoint> tracerEndpoints;
 
 
-    public AbstractInterceptor(CutPoint cutPoint, List<TracerAdaptor> tracerAdaptors) {
+    public AbstractInterceptor(CutPoint cutPoint, List<TracerEndpoint> tracerAdaptors) {
         this.cutPoint = cutPoint;
-        this.tracerAdaptors = Collections.unmodifiableList(tracerAdaptors);
+        this.tracerEndpoints = Collections.unmodifiableList(tracerAdaptors);
     }
 
     @Override
     public void beforeMethod(Parameters parameters) {
         Context context = buildContext(cutPoint);
-        for (TracerAdaptor tracerAdaptor : tracerAdaptors) {
+        for (TracerEndpoint tracerAdaptor : tracerEndpoints) {
             doBeforeMethod(tracerAdaptor, parameters, context);
         }
     }
@@ -34,7 +34,7 @@ public abstract class AbstractInterceptor implements Interceptor {
     @Override
     public void handleMethodException(ExceptionParameters exceptionParameters) {
         Context context = buildContext(cutPoint);
-        for (TracerAdaptor tracerAdaptor : tracerAdaptors) {
+        for (TracerEndpoint tracerAdaptor : tracerEndpoints) {
             doHandleMethodException(tracerAdaptor, exceptionParameters, context);
         }
     }
@@ -42,8 +42,8 @@ public abstract class AbstractInterceptor implements Interceptor {
     @Override
     public void afterMethod(ReturnParameters returnParameters) {
         Context context = buildContext(cutPoint);
-        for (int i = tracerAdaptors.size() - 1; i >= 0; i--) {
-            doAfterMethod(tracerAdaptors.get(i), returnParameters, context);
+        for (int i = tracerEndpoints.size() - 1; i >= 0; i--) {
+            doAfterMethod(tracerEndpoints.get(i), returnParameters, context);
         }
     }
 
@@ -51,11 +51,11 @@ public abstract class AbstractInterceptor implements Interceptor {
         return new Context(cutPoint);
     }
 
-    protected abstract void doHandleMethodException(TracerAdaptor tracerAdaptor, ExceptionParameters exceptionParameters, Context context);
+    protected abstract void doHandleMethodException(TracerEndpoint tracerAdaptor, ExceptionParameters exceptionParameters, Context context);
 
-    protected abstract void doBeforeMethod(TracerAdaptor tracerAdaptor, Parameters parameters, Context context);
+    protected abstract void doBeforeMethod(TracerEndpoint tracerAdaptor, Parameters parameters, Context context);
 
-    protected abstract void doAfterMethod(TracerAdaptor tracerAdaptor, ReturnParameters returnParameters, Context context);
+    protected abstract void doAfterMethod(TracerEndpoint tracerAdaptor, ReturnParameters returnParameters, Context context);
 
 
     @Override

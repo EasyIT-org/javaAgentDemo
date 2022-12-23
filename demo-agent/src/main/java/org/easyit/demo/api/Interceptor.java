@@ -1,6 +1,5 @@
 package org.easyit.demo.api;
 
-import org.easyit.demo.api.model.BaseParameters;
 import org.easyit.demo.api.model.ExceptionParameters;
 import org.easyit.demo.api.model.Parameters;
 import org.easyit.demo.api.model.ReturnParameters;

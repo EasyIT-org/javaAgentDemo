@@ -2,7 +2,6 @@ package org.easyit.demo.bytebuddy;
 
 import net.bytebuddy.implementation.bind.annotation.*;
 import org.easyit.demo.api.Interceptor;
-import org.easyit.demo.api.model.BaseParameters;
 import org.easyit.demo.api.model.ExceptionParameters;
 import org.easyit.demo.api.model.Parameters;
 import org.easyit.demo.api.model.ReturnParameters;
@@ -10,12 +9,12 @@ import org.easyit.demo.api.model.ReturnParameters;
 import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
 
-public class CommonInterceptorAdaptor {
+public class ByteBuddyInterceptorAdaptor {
 
 
     private Interceptor interceptor;
 
-    public CommonInterceptorAdaptor(Interceptor interceptor) {
+    public ByteBuddyInterceptorAdaptor(Interceptor interceptor) {
         this.interceptor = interceptor;
     }
 
