@@ -17,7 +17,7 @@ public class MultiMethodInterceptorGroup extends AbstractInterceptorGroup {
     }
 
     @Override
-    protected List<Interceptor> getInterceptorList(Parameters parameters) {
+    protected List getInterceptorList(Parameters parameters) {
         String name = parameters.getMethod().getName();
         List<Interceptor> interceptors = methodInterceptorMap.get(name);
         if (interceptors == null) {

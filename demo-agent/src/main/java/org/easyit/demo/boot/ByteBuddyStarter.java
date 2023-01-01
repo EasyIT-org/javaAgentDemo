@@ -36,6 +36,9 @@ public class ByteBuddyStarter {
                 .transform(new AgentBuilder.Transformer() {
                     @Override
                     public DynamicType.Builder<?> transform(DynamicType.Builder<?> builder, TypeDescription typeDescription, ClassLoader classLoader, JavaModule javaModule, ProtectionDomain protectionDomain) {
+
+                        // todo 现在这里的 类-方法-interceptor 的关系是 1:N:1 ,在interceptor中又存放一个 map 来确定最终的 interceptor
+                        // todo 需要考虑下,是否把这种关系改为 1:N:N,在构造之初,就把方法对应的 interceptor 确定下来
                         return builder
                                 .method(buildMethodMatcher(typeDescription, cutPointMap))
                                 .intercept(MethodDelegation.withDefaultConfiguration().to(getCommonInterceptor(typeDescription, cutPointMap)));

@@ -2,8 +2,6 @@ package org.easyit.demo.api.interceptor;
 
 import com.google.common.collect.Lists;
 import org.easyit.demo.api.CutPoint;
-import org.easyit.demo.api.Interceptor;
-import org.easyit.demo.api.model.BaseParameters;
 import org.easyit.demo.api.model.Parameters;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
@@ -51,7 +49,7 @@ public class AbstractInterceptorGroupTest {
         }
 
         @Override
-        protected List<Interceptor> getInterceptorList(Parameters parameters) {
+        protected List getInterceptorList(Parameters parameters) {
             return Lists.newArrayList(interceptor1, interceptor2);
         }
     }

@@ -6,17 +6,20 @@ import org.easyit.demo.api.model.Parameters;
 import org.easyit.demo.api.model.ReturnParameters;
 
 
-public interface TracerEndpoint {
+public interface Endpoint {
 
-    void onEnterStart(Parameters parameters, Context context);
+    String getName();
 
-    void onEnterEnd(ReturnParameters returnParameters, Context context);
+    void onTaskBuild();
 
-    void onException(ExceptionParameters exceptionParameters, Context context);
+    void onTaskStart();
+
+    void onTaskEnd();
 
     void onTraceStart(Parameters parameters, Context context);
 
     void onTraceEnd(ReturnParameters returnParameters, Context context);
 
+    void onException(ExceptionParameters exceptionParameters, Context context);
 
 }

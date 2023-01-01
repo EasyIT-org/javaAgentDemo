@@ -2,7 +2,6 @@ package org.easyit.demo.api.interceptor;
 
 import org.easyit.demo.api.CutPoint;
 import org.easyit.demo.api.Interceptor;
-import org.easyit.demo.api.model.BaseParameters;
 import org.easyit.demo.api.model.ExceptionParameters;
 import org.easyit.demo.api.model.Parameters;
 import org.easyit.demo.api.model.ReturnParameters;
@@ -41,11 +40,6 @@ public class TestInterceptor implements Interceptor {
     @Override
     public void afterMethod(ReturnParameters returnParameters) {
         RECORD.add(name + AFTER);
-    }
-
-    @Override
-    public Integer getOrder() {
-        return order;
     }
 
     @Override

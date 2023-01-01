@@ -1,10 +1,10 @@
 package org.easyit.demo.api.interceptor;
 
 import com.google.common.collect.Lists;
-import org.easyit.demo.endpoint.ProfilerEndpoint;
 import org.easyit.demo.api.CutPoint;
+import org.easyit.demo.api.Endpoint;
 import org.easyit.demo.api.Interceptor;
-import org.easyit.demo.api.TracerEndpoint;
+import org.easyit.demo.endpoint.ProfilerEndpoint;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -15,9 +15,9 @@ public class InterceptorRegistry {
     public static final InterceptorRegistry INSTANCE = new InterceptorRegistry();
 
     public Map<String, Object> interceptorMap = new ConcurrentHashMap<>();
-    private ProfilerEndpoint profilerEndpoint = new ProfilerEndpoint();
+    private ProfilerEndpoint profilerEndpoint = ProfilerEndpoint.INSTANCE;
     // todo need tracer Management
-    private ArrayList<TracerEndpoint> tracerAdaptors = Lists.newArrayList(profilerEndpoint);
+    private ArrayList<Endpoint> tracerAdaptors = Lists.newArrayList(profilerEndpoint);
 
     public Interceptor newInterceptor(CutPoint cp) {
 
