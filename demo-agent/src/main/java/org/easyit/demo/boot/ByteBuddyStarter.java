@@ -2,7 +2,6 @@ package org.easyit.demo.boot;
 
 import com.google.common.collect.Lists;
 import net.bytebuddy.agent.builder.AgentBuilder;
-import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.implementation.MethodDelegation;
@@ -11,8 +10,8 @@ import net.bytebuddy.matcher.ElementMatchers;
 import net.bytebuddy.utility.JavaModule;
 import org.easyit.demo.api.CutPoint;
 import org.easyit.demo.api.Interceptor;
-import org.easyit.demo.api.interceptor.MultiMethodInterceptorGroup;
 import org.easyit.demo.api.interceptor.InterceptorRegistry;
+import org.easyit.demo.api.interceptor.ListInterceptorGroup;
 import org.easyit.demo.bytebuddy.ByteBuddyInterceptorAdaptor;
 
 import java.lang.instrument.Instrumentation;
@@ -32,19 +31,29 @@ public class ByteBuddyStarter {
 
 
         AgentBuilder.Identified.Extendable extendable = new AgentBuilder.Default().with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION)
-                .type(buildTypeMatcher(cutPointMap))
+                .type(multiNameMatcher(cutPointMap.keySet()))
                 .transform(new AgentBuilder.Transformer() {
                     @Override
                     public DynamicType.Builder<?> transform(DynamicType.Builder<?> builder, TypeDescription typeDescription, ClassLoader classLoader, JavaModule javaModule, ProtectionDomain protectionDomain) {
 
                         // todo 现在这里的 类-方法-interceptor 的关系是 1:N:1 ,在interceptor中又存放一个 map 来确定最终的 interceptor
                         // todo 需要考虑下,是否把这种关系改为 1:N:N,在构造之初,就把方法对应的 interceptor 确定下来
-                        return builder
-                                .method(buildMethodMatcher(typeDescription, cutPointMap))
-                                .intercept(MethodDelegation.withDefaultConfiguration().to(getCommonInterceptor(typeDescription, cutPointMap)));
+                        Map<String, List<CutPoint>> methodMap = cutPointMap.get(typeDescription.getName()); // todo debug 看下这边的 typeDescription.getName()
+                        DynamicType.Builder<?> tmp = builder;
+                        for (Map.Entry<String, List<CutPoint>> methodCutPointEntry : methodMap.entrySet()) {
+                            tmp = tmp.method(named(methodCutPointEntry.getKey()))
+                                    .intercept(MethodDelegation.withDefaultConfiguration().to(getInterceptorByCutPoint(methodCutPointEntry.getValue())));
+                        }
+                        return tmp;
                     }
                 });
         extendable.installOn(instrumentation);
+    }
+
+    private ByteBuddyInterceptorAdaptor getInterceptorByCutPoint(List<CutPoint> cutPoints) {
+        List<Interceptor> interceptorList = cutPoint2Interceptor(cutPoints);
+        ListInterceptorGroup listInterceptorGroup = new ListInterceptorGroup(interceptorList);
+        return new ByteBuddyInterceptorAdaptor(listInterceptorGroup);
     }
 
     private Map<String, Map<String, List<CutPoint>>> parseCutPoints(List<CutPoint> cutPoints) {
@@ -54,6 +63,7 @@ public class ByteBuddyStarter {
     }
 
     private List<CutPoint> loadCutPoints() {
+        // todo read from file
         CutPoint.CutPointImpl cutPoint1 = new CutPoint.CutPointImpl("SOFARPC.startRPC", "START", "com.alipay.sofa.rpc.server.bolt.BoltServerProcessor", "handleRequest");
         CutPoint.CutPointImpl cutPoint2 = new CutPoint.CutPointImpl("SOFARPC.startBiz", "TRACE", "com.alipay.sofa.rpc.server.bolt.BoltServerProcessor", "handleRequest");
         return Lists.newArrayList(cutPoint1, cutPoint2);
@@ -61,34 +71,12 @@ public class ByteBuddyStarter {
 
     }
 
-    private ElementMatcher<MethodDescription> buildMethodMatcher(TypeDescription typeDescription, Map<String, Map<String, List<CutPoint>>> map) {
-        Map<String, List<CutPoint>> methodMap = map.get(typeDescription.getName()); // todo debug 看下这边的 typeDescription.getName()
-        return multiNameMatcher(methodMap.keySet());
-    }
-
-    private ByteBuddyInterceptorAdaptor getCommonInterceptor(TypeDescription typeDescription, Map<String, Map<String, List<CutPoint>>> map) {
-        Map<String, List<CutPoint>> methodMap = map.get(typeDescription.getName());
-        Interceptor multiMethodInterceptor = resolvePointCut(methodMap);
-        ByteBuddyInterceptorAdaptor commonInterceptorAdaptor = new ByteBuddyInterceptorAdaptor(multiMethodInterceptor);
-        return commonInterceptorAdaptor;
-    }
-
-    private Interceptor resolvePointCut(Map<String, List<CutPoint>> methodMap) {
-        Map<String, List<Interceptor>> map = methodMap.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> cutPoint2Interceptor(entry.getValue())));
-        return new MultiMethodInterceptorGroup(map);
-    }
-
     private List<Interceptor> cutPoint2Interceptor(List<CutPoint> cutPoints) {
         return cutPoints.stream().map(InterceptorRegistry.INSTANCE::newInterceptor).collect(Collectors.toList());
     }
 
-
-    private ElementMatcher<TypeDescription> buildTypeMatcher(Map<String, Map<String, List<CutPoint>>> cutPoints) {
-        return multiNameMatcher(cutPoints.keySet());
-    }
-
-    private ElementMatcher multiNameMatcher(Collection<String> typeNames) {
-        ElementMatcher matcher = ElementMatchers.none();
+    private ElementMatcher<TypeDescription> multiNameMatcher(Collection<String> typeNames) {
+        ElementMatcher<TypeDescription> matcher = ElementMatchers.none();
         for (String typeName : typeNames) {
             matcher = named(typeName).or(matcher);
         }
