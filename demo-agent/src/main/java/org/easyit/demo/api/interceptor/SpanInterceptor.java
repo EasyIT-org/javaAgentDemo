@@ -8,9 +8,9 @@ import org.easyit.demo.api.model.ReturnParameters;
 import org.easyit.demo.endpoint.EndpointManager;
 import org.easyit.demo.util.IdHolder;
 
-public class TraceInterceptor extends AbstractInterceptor {
+public class SpanInterceptor extends AbstractInterceptor {
 
-    public TraceInterceptor(CutPoint cutPoint) {
+    public SpanInterceptor(CutPoint cutPoint) {
         super(cutPoint);
     }
 
@@ -18,7 +18,7 @@ public class TraceInterceptor extends AbstractInterceptor {
     public void beforeMethod(Parameters parameters) {
         Context context = buildContext();
         IdHolder.start();
-        EndpointManager.INSTANCE.onTraceStart(parameters, context);
+        EndpointManager.INSTANCE.onSpanStart(parameters, context);
     }
 
     @Override
@@ -30,7 +30,7 @@ public class TraceInterceptor extends AbstractInterceptor {
     @Override
     public void afterMethod(ReturnParameters returnParameters) {
         Context context = buildContext();
-        EndpointManager.INSTANCE.onTraceEnd(returnParameters, context);
+        EndpointManager.INSTANCE.onSpanEnd(returnParameters, context);
         IdHolder.end();
     }
 }

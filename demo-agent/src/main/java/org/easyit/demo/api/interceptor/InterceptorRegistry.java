@@ -11,9 +11,9 @@ public class InterceptorRegistry {
 
         String type = cp.getType();
         if ("START".equals(type)) {
-            return new TraceInterceptor(cp);
+            return new SpanInterceptor(cp);
         } else if ("TRACE".equals(type)) {
-            return new TraceInterceptor(cp);
+            return new SpanInterceptor(cp);
         }
         throw new IllegalArgumentException("Unexpected type:" + type);
     }

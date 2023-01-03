@@ -82,19 +82,22 @@ public class IdHolder {
         if (Objects.isNull(traceId)) {
             traceId = new Id();
             TRACE_ID.set(traceId);
-            traceId.addCallback(EndpointManager.INSTANCE::report);
+            traceId.addCallback(EndpointManager.INSTANCE::onTraceEnd);
             if (Objects.nonNull(spanId)) {
                 throw new IllegalStateException("TraceId is null,SpanId must be null. However SpanId is not null now.");
             }
+            EndpointManager.INSTANCE.onTraceStart();
         }
 
         if (Objects.isNull(spanId)) {
             // TraceId is not null, but spanId is null
             traceId.increment();
             spanId = new Id();
+            spanId.addCallback(EndpointManager.INSTANCE::onSegmentEnd);
             spanId.addCallback(traceId::decrement);
             spanId.addCallback(IdHolder::removeAll);
             SPAN_ID.set(spanId);
+            EndpointManager.INSTANCE.onSegmentStart();
         }
 
         // traceId and spanId are not null

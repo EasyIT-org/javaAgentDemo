@@ -29,31 +29,42 @@ public enum ProfilerEndpoint implements Endpoint {
 
     @Override
     public void onException(ExceptionParameters exceptionParameters, Context context) {
-
+        // TODO: 2023/1/3
     }
 
-    @Override
-    public void report() {
-        String result = Profiler.dump();
-        // todo: add some filter
-        profilerContainer.save(IdHolder.getTraceId().toString(), IdHolder.getSpanId().toString(), result);
-
-    }
 
     @Override
-    public void onTraceStart(Parameters parameters, Context context) {
+    public void onSpanStart(Parameters parameters, Context context) {
         String name = context.getCutPoint().getName();
         Profiler.enter(name);
     }
 
     @Override
-    public void onTraceEnd(ReturnParameters returnParameters, Context context) {
+    public void onSpanEnd(ReturnParameters returnParameters, Context context) {
         Profiler.release();
+    }
+
+    @Override
+    public void onSegmentEnd() {
+        String result = Profiler.dump();
+        // todo: add some filter
+        profilerContainer.add(IdHolder.getTraceId().toString(), IdHolder.getSpanId().toString(), result);
+    }
+
+    @Override
+    public void onTraceEnd() {
+        Map<String, String> segmentIdMap = profilerContainer.pop(IdHolder.getTraceId().toString());
+        // TODO: 2023/1/3 print prettily
+        for (Map.Entry<String, String> entry : segmentIdMap.entrySet()) {
+            System.out.println(entry.getKey());
+            System.out.println(entry.getValue());
+        }
+
     }
 
     public class ProfilerContainer {
         /**
-         * TraceId -> SpanId -> result
+         * TraceId -> SegmentId -> result
          */
         // todo be careful , OOM
         private final Map<String, Map<String, String>> container;
@@ -62,10 +73,16 @@ public enum ProfilerEndpoint implements Endpoint {
             this.container = new ConcurrentHashMap<>();
         }
 
-        public void save(String traceId, String spanId, String result) {
+        public void add(String traceId, String segmentId, String result) {
             Map<String, String> spanIdMap = container.computeIfAbsent(traceId, t -> new ConcurrentHashMap<>());
-            spanIdMap.put(spanId, result);
+            spanIdMap.put(segmentId, result);
         }
+
+        public Map<String, String> pop(String traceId) {
+            Map<String, String> segmentIdMap = container.remove(traceId);
+            return segmentIdMap;
+        }
+
 
         public void clear() {
             container.clear();

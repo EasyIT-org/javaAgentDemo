@@ -13,21 +13,26 @@ public interface Endpoint {
     default void onTaskBuild() {
     }
 
-    default void onTaskStart() {
+    default void onSpanStart(Parameters parameters, Context context) {
     }
 
-    default void onTaskEnd() {
-    }
-
-    default void onTraceStart(Parameters parameters, Context context) {
-    }
-
-    default void onTraceEnd(ReturnParameters returnParameters, Context context) {
+    default void onSpanEnd(ReturnParameters returnParameters, Context context) {
     }
 
     default void onException(ExceptionParameters exceptionParameters, Context context) {
     }
 
-    default void report() {
+    default void onSegmentStart() {
     }
+
+    default void onSegmentEnd() {
+    }
+
+    default void onTraceStart() {
+    }
+
+    default void onTraceEnd() {
+    }
+
+
 }

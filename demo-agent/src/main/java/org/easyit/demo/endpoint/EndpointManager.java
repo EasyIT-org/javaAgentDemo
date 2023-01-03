@@ -25,38 +25,23 @@ public enum EndpointManager implements Endpoint {
     }
 
     @Override
-    public void onTaskBuild() {
-        execute(Endpoint::onTaskBuild);
-    }
-
-    @Override
-    public void onTaskStart() {
-        execute(Endpoint::onTaskStart);
-    }
-
-    @Override
-    public void onTaskEnd() {
-        execute(Endpoint::onTaskEnd);
-    }
-
-    @Override
     public void onException(ExceptionParameters exceptionParameters, Context context) {
         execute(endpoint -> endpoint.onException(exceptionParameters, context));
     }
 
     @Override
-    public void report() {
-        execute(Endpoint::report);
+    public void onSegmentEnd() {
+        execute(Endpoint::onSegmentEnd);
     }
 
     @Override
-    public void onTraceStart(Parameters parameters, Context context) {
-        execute(endpoint -> endpoint.onTraceStart(parameters, context));
+    public void onSpanStart(Parameters parameters, Context context) {
+        execute(endpoint -> endpoint.onSpanStart(parameters, context));
     }
 
     @Override
-    public void onTraceEnd(ReturnParameters returnParameters, Context context) {
-        execute(endpoint -> endpoint.onTraceEnd(returnParameters, context));
+    public void onSpanEnd(ReturnParameters returnParameters, Context context) {
+        execute(endpoint -> endpoint.onSpanEnd(returnParameters, context));
     }
 
     private void execute(Consumer<Endpoint> consumer) {
