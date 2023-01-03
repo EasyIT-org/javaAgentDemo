@@ -13,7 +13,7 @@ import static com.alibaba.ttl.TransmittableThreadLocal.Transmitter.registerTrans
  */
 public class IdHolder {
     private static final ThreadLocal<Id> TRACE_ID = new ThreadLocal<>();
-    private static final ThreadLocal<Id> SPAN_ID = ThreadLocal.withInitial(IdHolder::currentId);
+    private static final ThreadLocal<Id> SPAN_ID = new ThreadLocal<>();
     private static final TransmittableThreadLocal.Transmitter.Transmittee<Id, Id> traceIdTransmittee = new TransmittableThreadLocal.Transmitter.Transmittee<Id, Id>() {
 
         @Override
@@ -52,10 +52,6 @@ public class IdHolder {
 
     static {
         registerTransmittee(traceIdTransmittee);
-    }
-
-    private static Id currentId() {
-        return new Id();
     }
 
     public static Id getTraceId() {

@@ -9,6 +9,7 @@ import org.easyit.demo.api.model.ReturnParameters;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
+// todo  这个类用代理做, 每次改接口就要改一遍这个类太烦了
 public enum EndpointManager implements Endpoint {
     INSTANCE;
 
@@ -30,11 +31,6 @@ public enum EndpointManager implements Endpoint {
     }
 
     @Override
-    public void onSegmentEnd() {
-        execute(Endpoint::onSegmentEnd);
-    }
-
-    @Override
     public void onSpanStart(Parameters parameters, Context context) {
         execute(endpoint -> endpoint.onSpanStart(parameters, context));
     }
@@ -43,6 +39,27 @@ public enum EndpointManager implements Endpoint {
     public void onSpanEnd(ReturnParameters returnParameters, Context context) {
         execute(endpoint -> endpoint.onSpanEnd(returnParameters, context));
     }
+
+    @Override
+    public void onSegmentStart() {
+        execute(Endpoint::onSegmentStart);
+    }
+
+    @Override
+    public void onSegmentEnd() {
+        execute(Endpoint::onSegmentEnd);
+    }
+
+    @Override
+    public void onTraceStart() {
+        execute(Endpoint::onTraceStart);
+    }
+
+    @Override
+    public void onTraceEnd() {
+        execute(Endpoint::onTraceEnd);
+    }
+
 
     private void execute(Consumer<Endpoint> consumer) {
         for (Endpoint endpoint : endpoints.values()) {

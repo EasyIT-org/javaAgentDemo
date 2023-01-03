@@ -45,7 +45,13 @@ public enum ProfilerEndpoint implements Endpoint {
     }
 
     @Override
+    public void onSegmentStart() {
+        Profiler.start("START");
+    }
+
+    @Override
     public void onSegmentEnd() {
+        Profiler.release();
         String result = Profiler.dump();
         // todo: add some filter
         profilerContainer.add(IdHolder.getTraceId().toString(), IdHolder.getSpanId().toString(), result);
