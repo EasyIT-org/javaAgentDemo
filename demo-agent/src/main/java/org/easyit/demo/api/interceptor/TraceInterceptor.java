@@ -6,6 +6,7 @@ import org.easyit.demo.api.model.ExceptionParameters;
 import org.easyit.demo.api.model.Parameters;
 import org.easyit.demo.api.model.ReturnParameters;
 import org.easyit.demo.endpoint.EndpointManager;
+import org.easyit.demo.util.IdHolder;
 
 public class TraceInterceptor extends AbstractInterceptor {
 
@@ -16,6 +17,7 @@ public class TraceInterceptor extends AbstractInterceptor {
     @Override
     public void beforeMethod(Parameters parameters) {
         Context context = buildContext();
+        IdHolder.start();
         EndpointManager.INSTANCE.onTraceStart(parameters, context);
     }
 
@@ -29,5 +31,6 @@ public class TraceInterceptor extends AbstractInterceptor {
     public void afterMethod(ReturnParameters returnParameters) {
         Context context = buildContext();
         EndpointManager.INSTANCE.onTraceEnd(returnParameters, context);
+        IdHolder.end();
     }
 }

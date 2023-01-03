@@ -1,6 +1,5 @@
 package org.easyit.demo.boot;
 
-import com.google.common.collect.Lists;
 import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType;
@@ -16,6 +15,7 @@ import org.easyit.demo.bytebuddy.ByteBuddyInterceptorAdaptor;
 
 import java.lang.instrument.Instrumentation;
 import java.security.ProtectionDomain;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -66,9 +66,10 @@ public class ByteBuddyStarter {
         // todo read from file
         CutPoint.CutPointImpl cutPoint1 = new CutPoint.CutPointImpl("SOFARPC.startRPC", "START", "com.alipay.sofa.rpc.server.bolt.BoltServerProcessor", "handleRequest");
         CutPoint.CutPointImpl cutPoint2 = new CutPoint.CutPointImpl("SOFARPC.startBiz", "TRACE", "com.alipay.sofa.rpc.server.bolt.BoltServerProcessor", "handleRequest");
-        return Lists.newArrayList(cutPoint1, cutPoint2);
-
-
+        List<CutPoint> cutPoints = new ArrayList<>();
+        cutPoints.add(cutPoint1);
+        cutPoints.add(cutPoint2);
+        return cutPoints;
     }
 
     private List<Interceptor> cutPoint2Interceptor(List<CutPoint> cutPoints) {

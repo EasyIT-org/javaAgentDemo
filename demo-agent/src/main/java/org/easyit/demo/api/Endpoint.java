@@ -10,16 +10,24 @@ public interface Endpoint {
 
     String getName();
 
-    void onTaskBuild();
+    default void onTaskBuild() {
+    }
 
-    void onTaskStart();
+    default void onTaskStart() {
+    }
 
-    void onTaskEnd();
+    default void onTaskEnd() {
+    }
 
-    void onTraceStart(Parameters parameters, Context context);
+    default void onTraceStart(Parameters parameters, Context context) {
+    }
 
-    void onTraceEnd(ReturnParameters returnParameters, Context context);
+    default void onTraceEnd(ReturnParameters returnParameters, Context context) {
+    }
 
-    void onException(ExceptionParameters exceptionParameters, Context context);
+    default void onException(ExceptionParameters exceptionParameters, Context context) {
+    }
 
+    default void report() {
+    }
 }

@@ -45,6 +45,11 @@ public enum EndpointManager implements Endpoint {
     }
 
     @Override
+    public void report() {
+        execute(Endpoint::report);
+    }
+
+    @Override
     public void onTraceStart(Parameters parameters, Context context) {
         execute(endpoint -> endpoint.onTraceStart(parameters, context));
     }
