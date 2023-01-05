@@ -1,0 +1,19 @@
+version: bolt
+supportVersion:
+
+cutPoints:
+  - name: BOLT.decode
+    type: TRACE
+    className: com.alipay.remoting.rpc.protocol.RpcCommandDecoder
+    methodName: decode
+
+  - name: BOLT.decodeAndProcess
+    type: TRACE
+    className: com.alipay.remoting.codec.AbstractBatchDecoder
+    methodName: channelRead
+
+  - name: BOLT.process
+    type: TRACE
+    className: com.alipay.remoting.rpc.protocol.RpcRequestProcessor
+    methodName: doProcess
+

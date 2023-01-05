@@ -83,11 +83,13 @@ public class IdHolder {
                 throw new IllegalStateException("TraceId is null,SpanId must be null. However SpanId is not null now.");
             }
             EndpointManager.INSTANCE.onTraceStart();
+            // 除了当 TraceId 第一次建立的时候,需要调用 traceId.increment()(代表当前线程的 segment) ,
+            // 子线程的 increment 应该在 Task 简历的时候调用, 而不是本 start 方法.
+            traceId.increment();
         }
 
         if (Objects.isNull(spanId)) {
             // TraceId is not null, but spanId is null
-            traceId.increment();
             spanId = new Id();
             spanId.addCallback(EndpointManager.INSTANCE::onSegmentEnd);
             spanId.addCallback(traceId::decrement);

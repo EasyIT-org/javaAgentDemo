@@ -46,7 +46,8 @@ public enum ProfilerEndpoint implements Endpoint {
 
     @Override
     public void onSegmentStart() {
-        Profiler.start("START");
+        String currentThreadName = Thread.currentThread().getName();
+        Profiler.start("START-" + currentThreadName);
     }
 
     @Override
@@ -59,7 +60,9 @@ public enum ProfilerEndpoint implements Endpoint {
 
     @Override
     public void onTraceEnd() {
-        Map<String, String> segmentIdMap = profilerContainer.pop(IdHolder.getTraceId().toString());
+        String traceId = IdHolder.getTraceId().toString();
+        Map<String, String> segmentIdMap = profilerContainer.pop(traceId);
+        System.out.println("\n--------------------traceId:"+ traceId+"-----------------");
         // TODO: 2023/1/3 print prettily
         for (Map.Entry<String, String> entry : segmentIdMap.entrySet()) {
             System.out.println(entry.getKey());

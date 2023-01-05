@@ -1,0 +1,24 @@
+version: sofarpc
+supportVersion:
+
+cutPoints:
+  - name: SOFARPC.startRPC
+    type: TRACE
+    className: com.alipay.sofa.rpc.server.bolt.BoltServerProcessor
+    methodName: handleRequest
+
+  - name: SOFARPC.deserializeHeader
+    type: TRACE
+    className: com.alipay.sofa.rpc.codec.bolt.SofaRpcSerialization
+    methodName: deserializeHeader
+
+  - name: SOFARPC.deserializeContent
+    type: TRACE
+    className: com.alipay.sofa.rpc.codec.bolt.SofaRpcSerialization
+    methodName: deserializeContent
+
+  - name: SOFARPC.filter
+    type: TRACE
+    className: com.alipay.sofa.rpc.filter.Filter
+    methodName: invoke
+    enhanceType: abstract

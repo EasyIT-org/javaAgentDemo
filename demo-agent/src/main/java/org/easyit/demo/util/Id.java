@@ -31,11 +31,31 @@ public class Id {
     }
 
     public int increment() {
-        return counter.incrementAndGet();
+        int i = counter.incrementAndGet();
+
+        if (log()) {
+            Exception exception = new Exception();
+            System.out.println(id + " increment , result = " + i);
+            exception.printStackTrace();
+        }
+
+        return i;
+    }
+
+    private boolean log() {
+        return false;
     }
 
     public int decrement() {
         int i = counter.decrementAndGet();
+
+        if (log()) {
+            Exception exception = new Exception();
+            System.out.println(id + " decrement , result = " + i);
+            exception.printStackTrace();
+        }
+
+
         if (i == 0) {
             for (Runnable callback : callbacks) {
                 try {
